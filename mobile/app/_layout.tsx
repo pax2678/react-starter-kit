@@ -3,8 +3,13 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import { ClerkProvider, ClerkLoaded } from '@clerk/clerk-expo';
+import { ConvexProvider, ConvexReactClient } from 'convex/react';
+import Constants from 'expo-constants';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+
+const convex = new ConvexReactClient(Constants.expoConfig?.extra?.convexUrl as string);
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -18,12 +23,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ClerkProvider publishableKey={Constants.expoConfig?.extra?.clerkPublishableKey as string}>
+      <ClerkLoaded>
+        <ConvexProvider client={convex}>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="pricing" options={{ title: 'Pricing' }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+            <StatusBar style="auto" />
+          </ThemeProvider>
+        </ConvexProvider>
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }
