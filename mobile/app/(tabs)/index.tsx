@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { useAuth, useUser } from '@clerk/clerk-expo';
+import { Platform, StyleSheet, TouchableOpacity, Text, View, Alert } from 'react-native';
+import { useAuth, useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 
 import { HelloWave } from '@/components/HelloWave';
@@ -11,6 +11,25 @@ import { ThemedView } from '@/components/ThemedView';
 export default function HomeScreen() {
   const { isSignedIn } = useAuth();
   const { user } = useUser();
+  const { signOut } = useClerk();
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: () => signOut(),
+        },
+      ]
+    );
+  };
 
   return (
     <ParallaxScrollView
@@ -48,18 +67,46 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ThemedView>
       ) : (
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">Your Dashboard</ThemedText>
-          <ThemedText>
-            You're signed in and ready to go! Explore the features available to you.
-          </ThemedText>
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={() => router.push('/pricing')}
-          >
-            <Text style={styles.buttonText}>View Pricing Plans</Text>
-          </TouchableOpacity>
-        </ThemedView>
+        <>
+          <ThemedView style={styles.stepContainer}>
+            <ThemedText type="subtitle">User Profile</ThemedText>
+            <View style={styles.profileContainer}>
+              {user?.imageUrl && (
+                <Image 
+                  source={{ uri: user.imageUrl }} 
+                  style={styles.profileImage}
+                />
+              )}
+              <View style={styles.profileInfo}>
+                <ThemedText style={styles.profileName}>
+                  {user?.firstName} {user?.lastName}
+                </ThemedText>
+                <ThemedText style={styles.profileEmail}>
+                  {user?.emailAddresses?.[0]?.emailAddress}
+                </ThemedText>
+              </View>
+            </View>
+            <TouchableOpacity 
+              style={[styles.button, styles.logoutButton]}
+              onPress={handleSignOut}
+            >
+              <Text style={[styles.buttonText, styles.logoutButtonText]}>Sign Out</Text>
+            </TouchableOpacity>
+          </ThemedView>
+
+          <ThemedView style={styles.stepContainer}>
+            <ThemedText type="subtitle">Your Dashboard</ThemedText>
+            <ThemedText>
+              You're signed in and ready to go! Explore the features available to you.
+            </ThemedText>
+            <TouchableOpacity 
+              style={styles.button}
+              onPress={() => router.push('/pricing')}
+            >
+              <Text style={styles.buttonText}>View Pricing Plans</Text>
+            </TouchableOpacity>
+          </ThemedView>
+        </>
       )}
 
       <ThemedView style={styles.stepContainer}>
@@ -134,5 +181,37 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: '#007AFF',
+  },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    marginVertical: 8,
+  },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 16,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  profileEmail: {
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  logoutButton: {
+    backgroundColor: '#ff3b30',
+  },
+  logoutButtonText: {
+    color: '#fff',
   },
 });
