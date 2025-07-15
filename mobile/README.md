@@ -1,19 +1,30 @@
-# Welcome to your Expo app 👋
+# Mobile App - React Native with Expo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a React Native mobile application built with Expo that integrates with the same backend services as the web app:
 
-## Get started
+- **Convex**: Real-time backend database and API
+- **Clerk**: Authentication and user management  
+- **Polar**: Subscription payments and billing
 
-1. Install dependencies
+## Setup
 
+1. **Environment Configuration**: 
+   Add your environment variables to `app.json`:
+   ```json
+   "extra": {
+     "convexUrl": "your-convex-deployment-url",
+     "clerkPublishableKey": "your-clerk-publishable-key"
+   }
+   ```
+
+2. **Install Dependencies**:
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start Development Server**:
    ```bash
-   npx expo start
+   npm start
    ```
 
 In the output, you'll find options to open the app in a
@@ -23,17 +34,49 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Features
 
-## Get a fresh project
+### Authentication (Clerk)
+- Sign in/Sign up screens with email verification
+- Automatic session management
+- Protected routes and user state
 
-When you're ready, run:
+### Backend (Convex)
+- Real-time data synchronization with web app
+- Shared database and API functions
+- TypeScript-safe API calls
 
-```bash
-npm run reset-project
+### Payments (Polar)
+- Native pricing screen
+- Subscription management
+- Customer portal integration
+- Mobile-optimized checkout flow
+
+## File Structure
+
+```
+app/
+├── (auth)/          # Authentication screens
+│   ├── sign-in.tsx
+│   ├── sign-up.tsx
+│   └── _layout.tsx
+├── (tabs)/          # Main app tabs
+│   ├── index.tsx    # Home screen with auth integration
+│   └── ...
+├── pricing.tsx     # Pricing and subscription screen
+└── _layout.tsx     # Root layout with providers
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Integration Details
+
+The mobile app shares the same backend services as the web application:
+
+- **Convex functions**: Located in `/convex` directory (shared)
+- **Database schema**: Shared between web and mobile
+- **Authentication**: Same Clerk application
+- **Subscriptions**: Same Polar integration
+
+This ensures data consistency and feature parity between platforms.
 
 ## Learn more
 
