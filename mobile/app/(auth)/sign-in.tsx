@@ -1,10 +1,14 @@
-import { useSignIn } from '@clerk/clerk-expo';
+import { useSignIn, useOAuth } from '@clerk/clerk-expo';
 import { Link, router } from 'expo-router';
-import { Text, TextInput, Button, View, StyleSheet } from 'react-native';
+import { Text, TextInput, Button, View, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function SignInScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const { startOAuthFlow: startGoogleFlow } = useOAuth({ strategy: 'oauth_google' });
 
   const [emailAddress, setEmailAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -31,9 +35,32 @@ export default function SignInScreen() {
     }
   }, [isLoaded, emailAddress, password]);
 
+  const onGoogleSignIn = React.useCallback(async () => {
+    try {
+      const { createdSessionId, setActive } = await startGoogleFlow();
+
+      if (createdSessionId) {
+        setActive!({ session: createdSessionId });
+        router.replace('/');
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  }, [startGoogleFlow]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
+      
+      <TouchableOpacity style={styles.googleButton} onPress={onGoogleSignIn}>
+        <Text style={styles.googleButtonText}>Continue with Google</Text>
+      </TouchableOpacity>
+      
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>or</Text>
+        <View style={styles.dividerLine} />
+      </View>
       
       <TextInput
         style={styles.input}
@@ -73,9 +100,41 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 30,
     textAlign: 'center',
     color: '#000000',
+  },
+  googleButton: {
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#dadce0',
+    borderRadius: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  googleButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#3c4043',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#dadce0',
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    fontSize: 14,
+    color: '#5f6368',
   },
   input: {
     borderWidth: 1,
