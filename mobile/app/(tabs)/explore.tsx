@@ -1,110 +1,253 @@
+import { StyleSheet, TouchableOpacity, Text, View, Alert, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useAuth, useUser, useClerk } from '@clerk/clerk-expo';
+import { router } from 'expo-router';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
+export default function ProfileScreen() {
+  const { isSignedIn } = useAuth();
+  const { user } = useUser();
+  const { signOut } = useClerk();
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: () => signOut(),
+        },
+      ]
+    );
+  };
+
+  if (!isSignedIn) {
+    return (
+      <ScrollView style={styles.container}>
+        <ThemedView style={styles.content}>
+          <IconSymbol 
+            size={80} 
+            color="#808080" 
+            name="person.circle" 
+            style={styles.emptyIcon} 
+          />
+          <ThemedText type="title" style={styles.title}>Profile</ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Sign in to view your profile and manage your account
           </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
+          
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={() => router.push('/sign-in')}
+          >
+            <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.button, styles.secondaryButton]}
+            onPress={() => router.push('/sign-up')}
+          >
+            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Sign Up</Text>
+          </TouchableOpacity>
+        </ThemedView>
+      </ScrollView>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <ThemedView style={styles.content}>
+        <ThemedText type="title" style={styles.title}>Profile</ThemedText>
+        
+        {/* User Profile Section */}
+        <View style={styles.profileSection}>
+          {user?.imageUrl ? (
+            <Image 
+              source={{ uri: user.imageUrl }} 
+              style={styles.profileImage}
+            />
+          ) : (
+            <View style={styles.profileImagePlaceholder}>
+              <IconSymbol size={40} color="#808080" name="person.fill" />
+            </View>
+          )}
+          
+          <View style={styles.profileInfo}>
+            <ThemedText style={styles.userName}>
+              {user?.firstName} {user?.lastName}
             </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+            <ThemedText style={styles.userEmail}>
+              {user?.emailAddresses?.[0]?.emailAddress}
+            </ThemedText>
+            <ThemedText style={styles.userDetails}>
+              Member since {new Date(user?.createdAt || '').toLocaleDateString()}
+            </ThemedText>
+          </View>
+        </View>
+
+        {/* Account Actions */}
+        <ThemedView style={styles.section}>
+          <ThemedText type="subtitle">Account</ThemedText>
+          
+          <TouchableOpacity style={styles.menuItem}>
+            <IconSymbol size={24} color="#007AFF" name="person.circle" />
+            <Text style={styles.menuItemText}>Edit Profile</Text>
+            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/pricing')}
+          >
+            <IconSymbol size={24} color="#007AFF" name="creditcard" />
+            <Text style={styles.menuItemText}>Subscription & Billing</Text>
+            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
+          </TouchableOpacity>
+        </ThemedView>
+
+        {/* Settings */}
+        <ThemedView style={styles.section}>
+          <ThemedText type="subtitle">Settings</ThemedText>
+          
+          <TouchableOpacity style={styles.menuItem}>
+            <IconSymbol size={24} color="#007AFF" name="bell" />
+            <Text style={styles.menuItemText}>Notifications</Text>
+            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem}>
+            <IconSymbol size={24} color="#007AFF" name="lock" />
+            <Text style={styles.menuItemText}>Privacy & Security</Text>
+            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
+          </TouchableOpacity>
+        </ThemedView>
+
+        {/* Sign Out */}
+        <TouchableOpacity 
+          style={[styles.button, styles.logoutButton]}
+          onPress={handleSignOut}
+        >
+          <Text style={[styles.buttonText, styles.logoutButtonText]}>Sign Out</Text>
+        </TouchableOpacity>
+      </ThemedView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
   },
-  titleContainer: {
+  content: {
+    padding: 20,
+  },
+  title: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  subtitle: {
+    textAlign: 'center',
+    marginBottom: 30,
+    opacity: 0.7,
+  },
+  emptyIcon: {
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  profileSection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 16,
+  },
+  profileImagePlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  profileInfo: {
+    alignItems: 'center',
+  },
+  userName: {
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  userEmail: {
+    fontSize: 16,
+    opacity: 0.7,
+    marginBottom: 4,
+  },
+  userDetails: {
+    fontSize: 14,
+    opacity: 0.5,
+  },
+  section: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  menuItem: {
     flexDirection: 'row',
-    gap: 8,
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  menuItemText: {
+    flex: 1,
+    fontSize: 16,
+    marginLeft: 12,
+    color: '#000',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#007AFF',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  secondaryButtonText: {
+    color: '#007AFF',
+  },
+  logoutButton: {
+    backgroundColor: '#ff3b30',
+    marginTop: 20,
+  },
+  logoutButtonText: {
+    color: '#fff',
   },
 });
