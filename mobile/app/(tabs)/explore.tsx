@@ -96,11 +96,14 @@ export default function ProfileScreen() {
 
         {/* Account Actions */}
         <ThemedView style={styles.section}>
-          <ThemedText type="subtitle">Account</ThemedText>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>Account</ThemedText>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/settings')}
+          >
             <IconSymbol size={24} color="#007AFF" name="person.circle" />
-            <Text style={styles.menuItemText}>Edit Profile</Text>
+            <Text style={styles.menuItemText}>Account Settings</Text>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
@@ -114,17 +117,23 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </ThemedView>
 
-        {/* Settings */}
+        {/* Quick Actions */}
         <ThemedView style={styles.section}>
-          <ThemedText type="subtitle">Settings</ThemedText>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>Quick Actions</ThemedText>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/settings')}
+          >
             <IconSymbol size={24} color="#007AFF" name="bell" />
             <Text style={styles.menuItemText}>Notifications</Text>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => router.push('/settings')}
+          >
             <IconSymbol size={24} color="#007AFF" name="lock" />
             <Text style={styles.menuItemText}>Privacy & Security</Text>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
@@ -193,21 +202,28 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 4,
+    color: '#000000',
   },
   userEmail: {
     fontSize: 16,
-    opacity: 0.7,
+    color: '#666666',
     marginBottom: 4,
   },
   userDetails: {
     fontSize: 14,
-    opacity: 0.5,
+    color: '#888888',
   },
   section: {
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
+  },
+  sectionTitle: {
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
   },
   menuItem: {
     flexDirection: 'row',
@@ -220,7 +236,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 12,
-    color: '#000',
+    color: '#000000',
+    fontWeight: '500',
   },
   button: {
     backgroundColor: '#007AFF',

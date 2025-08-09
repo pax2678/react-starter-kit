@@ -203,10 +203,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 4,
+    color: '#000000',
   },
   profileEmail: {
     fontSize: 14,
-    opacity: 0.7,
+    color: '#666666',
   },
   logoutButton: {
     backgroundColor: '#ff3b30',

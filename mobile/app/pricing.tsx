@@ -29,6 +29,14 @@ export default function PricingScreen() {
   );
   const userSubscription = useQuery(api.subscriptions.fetchUserSubscription);
   const createCheckout = useAction(api.subscriptions.createCheckoutSession);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 Debug - subscriptionStatus:', subscriptionStatus);
+    console.log('🔍 Debug - userSubscription:', userSubscription);
+    console.log('🔍 Debug - isSignedIn:', isSignedIn);
+    console.log('🔍 Debug - userId:', userId);
+  }, [subscriptionStatus, userSubscription, isSignedIn, userId]);
   const createPortalUrl = useAction(api.subscriptions.createCustomerPortalUrl);
   const upsertUser = useMutation(api.users.upsertUser);
 
@@ -68,7 +76,7 @@ export default function PricingScreen() {
 
       // If user has active subscription, redirect to customer portal for plan changes
       if (
-        userSubscription?.status === 'active' &&
+        subscriptionStatus?.hasActiveSubscription &&
         userSubscription?.customerId
       ) {
         const portalResult = await createPortalUrl({
@@ -135,8 +143,9 @@ export default function PricingScreen() {
                 : index === Math.floor(plans.items.length / 2);
             const price = plan.prices[0];
             const isCurrentPlan =
-              userSubscription?.status === 'active' &&
-              userSubscription?.amount === price.amount;
+              subscriptionStatus?.hasActiveSubscription &&
+              (userSubscription?.amount === price.amount || 
+               (!userSubscription && price.amount === 1000)); // fallback: assume $10 plan if subscription details unavailable
 
             return (
               <View
