@@ -57,12 +57,24 @@ export default function HomepageScreen() {
     api.subscriptions.checkUserSubscriptionStatus,
     isSignedIn ? { userId: user?.id } : "skip"
   );
+  const userSubscription = useQuery(api.subscriptions.fetchUserSubscription);
+
+
+  // Debug logging for subscription data
+  useEffect(() => {
+    console.log('🔍 Homepage Debug - subscriptionStatus:', subscriptionStatus);
+    console.log('🔍 Homepage Debug - userSubscription:', userSubscription);
+    console.log('🔍 Homepage Debug - isSignedIn:', isSignedIn);
+    console.log('🔍 Homepage Debug - user?.id:', user?.id);
+    console.log('🔍 Homepage Debug - user object:', user);
+  }, [subscriptionStatus, userSubscription, isSignedIn, user?.id, user]);
 
   // Load plans
   useEffect(() => {
     const loadPlans = async () => {
       try {
         const result = await getPlans();
+        console.log('🔍 Homepage Debug - loaded plans:', result);
         setPlans(result);
       } catch (error) {
         console.error('Failed to load plans:', error);
@@ -218,14 +230,36 @@ export default function HomepageScreen() {
             {plans.items
               .sort((a: any, b: any) => a.prices[0].amount - b.prices[0].amount)
               .map((plan: any, index: number) => {
-                const isPopular = index === Math.floor(plans.items.length / 2);
+                const isPopular = plans.items.length === 2 
+                  ? index === 1 
+                  : index === Math.floor(plans.items.length / 2);
                 const price = plan.prices[0];
+                const isCurrentPlan = 
+                  userSubscription?.status === "active" &&
+                  userSubscription?.amount === price.amount;
+                  
+                // Debug logging for plan matching (matching web app logic)
+                console.log(`🔍 Plan ${plan.name} (${price.amount}) - isCurrentPlan: ${isCurrentPlan}`);
+                console.log(`  - userSubscription?.status: ${userSubscription?.status}`);
+                console.log(`  - userSubscription?.amount: ${userSubscription?.amount}`);
+                console.log(`  - price.amount: ${price.amount}`);
+                console.log(`  - status === "active": ${userSubscription?.status === "active"}`);
+                console.log(`  - amount match: ${userSubscription?.amount === price.amount}`);
                 
                 return (
-                  <View key={plan.id} style={[styles.planCard, isPopular && styles.popularCard]}>
-                    {isPopular && (
+                  <View key={plan.id} style={[
+                    styles.planCard, 
+                    isPopular && !isCurrentPlan && styles.popularCard,
+                    isCurrentPlan && styles.currentPlanCard
+                  ]}>
+                    {isPopular && !isCurrentPlan && (
                       <View style={styles.popularBadge}>
                         <Text style={styles.badgeText}>Popular</Text>
+                      </View>
+                    )}
+                    {isCurrentPlan && (
+                      <View style={styles.currentPlanBadge}>
+                        <Text style={styles.badgeText}>Current Plan</Text>
                       </View>
                     )}
                     <View style={styles.planHeader}>
@@ -255,11 +289,34 @@ export default function HomepageScreen() {
                     </View>
 
                     <TouchableOpacity 
-                      style={[styles.planButton, isPopular && styles.popularButton]}
+                      style={[
+                        styles.planButton, 
+                        isCurrentPlan && styles.currentPlanButton,
+                        isPopular && !isCurrentPlan && styles.popularButton
+                      ]}
                       onPress={() => router.push('/pricing')}
                     >
-                      <Text style={[styles.planButtonText, isPopular && styles.popularButtonText]}>
-                        Get Started (Demo)
+                      <Text style={[
+                        styles.planButtonText, 
+                        isCurrentPlan && styles.currentPlanButtonText,
+                        isPopular && !isCurrentPlan && styles.popularButtonText
+                      ]}>
+                        {isCurrentPlan
+                          ? "✓ Current Plan"
+                          : userSubscription?.status === "active"
+                          ? (() => {
+                              const currentAmount = userSubscription.amount || 0;
+                              const newAmount = price.amount;
+                              if (newAmount > currentAmount) {
+                                return `Upgrade (+$${((newAmount - currentAmount) / 100).toFixed(0)}/mo)`;
+                              } else if (newAmount < currentAmount) {
+                                return `Downgrade (-$${((currentAmount - newAmount) / 100).toFixed(0)}/mo)`;
+                              } else {
+                                return "Manage Plan";
+                              }
+                            })()
+                          : "Get Started (Demo)"
+                        }
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -536,11 +593,25 @@ const styles = StyleSheet.create({
     borderColor: '#007AFF',
     borderWidth: 2,
   },
+  currentPlanCard: {
+    borderColor: '#4caf50',
+    borderWidth: 2,
+    backgroundColor: '#f1f8e9',
+  },
   popularBadge: {
     position: 'absolute',
     top: -12,
     alignSelf: 'center',
     backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  currentPlanBadge: {
+    position: 'absolute',
+    top: -12,
+    alignSelf: 'center',
+    backgroundColor: '#4caf50',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
@@ -605,12 +676,18 @@ const styles = StyleSheet.create({
   popularButton: {
     backgroundColor: '#007AFF',
   },
+  currentPlanButton: {
+    backgroundColor: '#6c757d',
+  },
   planButtonText: {
     color: '#007AFF',
     fontSize: 16,
     fontWeight: '600',
   },
   popularButtonText: {
+    color: '#fff',
+  },
+  currentPlanButtonText: {
     color: '#fff',
   },
 
