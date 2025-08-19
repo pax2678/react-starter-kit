@@ -6,3 +6,6 @@
 /build/
 
 .env.local
+
+# Agent configuration, personal AI assistance file
+.claude/
