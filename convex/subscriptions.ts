@@ -51,7 +51,6 @@ const createCheckout = async ({
     customerEmail: customerEmail,
     metadata: {
       ...metadata,
-      priceId: productPriceId,
     },
   };
 
