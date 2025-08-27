@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, Text, View, Alert, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, Alert, ScrollView, Platform } from 'react-native';
 import { Image } from 'expo-image';
 import { useAuth, useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
@@ -8,26 +8,108 @@ import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function ProfileScreen() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, signOut: authSignOut } = useAuth();
   const { user } = useUser();
-  const { signOut } = useClerk();
+  const clerk = useClerk();
 
-  const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: () => signOut(),
-        },
-      ]
-    );
+  const handleSignOut = async () => {
+    const performSignOut = async () => {
+      try {
+        console.log('Starting sign out process...');
+        
+        if (Platform.OS === 'web') {
+          // Try multiple logout approaches for web
+          console.log('Web platform detected, trying multiple approaches...');
+          
+          // Method 1: Try auth signOut first
+          try {
+            await authSignOut();
+            console.log('Auth signOut completed');
+          } catch (e) {
+            console.log('Auth signOut failed, trying Clerk signOut:', e);
+            
+            // Method 2: Try clerk.signOut
+            try {
+              await clerk.signOut();
+              console.log('Clerk signOut completed');
+            } catch (e2) {
+              console.log('Clerk signOut also failed:', e2);
+            }
+          }
+          
+          // Method 3: Clear browser storage
+          if (typeof window !== 'undefined') {
+            try {
+              // Clear all Clerk-related storage
+              const keys = Object.keys(localStorage);
+              keys.forEach(key => {
+                if (key.startsWith('__clerk') || key.includes('clerk') || key.includes('session')) {
+                  localStorage.removeItem(key);
+                }
+              });
+              
+              // Also clear session storage
+              const sessionKeys = Object.keys(sessionStorage);
+              sessionKeys.forEach(key => {
+                if (key.startsWith('__clerk') || key.includes('clerk') || key.includes('session')) {
+                  sessionStorage.removeItem(key);
+                }
+              });
+              
+              console.log('Cleared Clerk-related storage');
+            } catch (e) {
+              console.log('Storage clear failed:', e);
+            }
+          }
+          
+          // Method 4: Force reload
+          setTimeout(() => {
+            if (typeof window !== 'undefined') {
+              window.location.href = window.location.origin;
+            }
+          }, 500);
+          
+        } else {
+          // For mobile, use the auth signOut
+          await authSignOut();
+          console.log('Mobile signOut completed');
+          router.replace('/(tabs)');
+        }
+        
+      } catch (error) {
+        console.error('All sign out methods failed:', error);
+        
+        // Last resort: force reload for web
+        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+          window.location.href = window.location.origin;
+        } else {
+          router.replace('/(tabs)');
+        }
+      }
+    };
+
+    // Check if we're on web - Alert.alert doesn't work properly on Expo Web
+    if (Platform.OS === 'web') {
+      // For web, sign out immediately without confirmation for smoother UX
+      performSignOut();
+    } else {
+      // For mobile, keep the native confirmation dialog
+      Alert.alert(
+        'Sign Out',
+        'Are you sure you want to sign out?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Sign Out',
+            style: 'destructive',
+            onPress: performSignOut,
+          },
+        ]
+      );
+    }
   };
 
   if (!isSignedIn) {
