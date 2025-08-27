@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -21,7 +22,7 @@ function MetricCard({ title, value, change, trend, description, icon, color }: M
   const trendColor = trend === 'up' ? '#10B981' : '#EF4444';
 
   return (
-    <View style={[styles.card, { width: cardWidth }]}>
+    <ThemedView style={[styles.card, { width: cardWidth }]}>
       <View style={styles.cardHeader}>
         <View style={styles.titleRow}>
           <IconSymbol size={20} color={color} name={icon} />
@@ -29,16 +30,16 @@ function MetricCard({ title, value, change, trend, description, icon, color }: M
         </View>
         <View style={[styles.trendBadge, { backgroundColor: `${trendColor}15` }]}>
           <IconSymbol size={12} color={trendColor} name={trendIcon} />
-          <Text style={[styles.trendText, { color: trendColor }]}>{change}</Text>
+          <ThemedText style={[styles.trendText, { color: trendColor }]}>{change}</ThemedText>
         </View>
       </View>
       
       <ThemedText style={styles.cardValue}>{value}</ThemedText>
       
       <View style={styles.cardFooter}>
-        <Text style={styles.description}>{description}</Text>
+        <ThemedText style={styles.description}>{description}</ThemedText>
       </View>
-    </View>
+    </ThemedView>
   );
 }
 
@@ -102,7 +103,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 16,
-    color: '#000000',
   },
   grid: {
     flexDirection: 'row',
@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     shadowColor: '#000',
@@ -134,9 +133,9 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '500',
     flex: 1,
+    opacity: 0.7,
   },
   trendBadge: {
     flexDirection: 'row',
@@ -154,7 +153,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 8,
-    color: '#000000',
   },
   cardFooter: {
     borderTopWidth: 1,
@@ -163,7 +161,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 11,
-    color: '#6B7280',
     lineHeight: 14,
+    opacity: 0.7,
   },
 });

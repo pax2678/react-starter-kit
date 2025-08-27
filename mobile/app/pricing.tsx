@@ -12,6 +12,8 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/ThemedText';
 import { api } from 'convex/_generated/api';
 
 export default function PricingScreen() {
@@ -106,8 +108,8 @@ export default function PricingScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Loading plans...</Text>
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        <ThemedText style={styles.loadingText}>Loading plans...</ThemedText>
+        {error && <ThemedText style={styles.errorText}>{error}</ThemedText>}
       </View>
     );
   }
@@ -115,15 +117,15 @@ export default function PricingScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <View style={styles.header}>
-        <Text style={styles.title}>Simple, transparent pricing</Text>
-        <Text style={styles.subtitle}>Choose the plan that fits your needs</Text>
+        <ThemedText style={styles.title}>Simple, transparent pricing</ThemedText>
+        <ThemedText style={styles.subtitle}>Choose the plan that fits your needs</ThemedText>
         
         {isSignedIn && !subscriptionStatus?.hasActiveSubscription && (
           <View style={styles.signedInBanner}>
-            <Text style={styles.bannerTitle}>📋 Complete your setup</Text>
-            <Text style={styles.bannerText}>
+            <ThemedText style={styles.bannerTitle}>📋 Complete your setup</ThemedText>
+            <ThemedText style={styles.bannerText}>
               You're signed in! Choose a plan below to access your dashboard and start using all features.
-            </Text>
+            </ThemedText>
           </View>
         )}
       </View>
@@ -148,7 +150,7 @@ export default function PricingScreen() {
                (!userSubscription && price.amount === 1000)); // fallback: assume $10 plan if subscription details unavailable
 
             return (
-              <View
+              <ThemedView
                 key={plan.id}
                 style={[
                   styles.planCard,
@@ -158,43 +160,43 @@ export default function PricingScreen() {
               >
                 {isPopular && !isCurrentPlan && (
                   <View style={styles.badge}>
-                    <Text style={styles.badgeText}>Most Popular</Text>
+                    <ThemedText style={styles.badgeText}>Most Popular</ThemedText>
                   </View>
                 )}
                 {isCurrentPlan && (
                   <View style={[styles.badge, styles.currentBadge]}>
-                    <Text style={styles.badgeText}>Current Plan</Text>
+                    <ThemedText style={styles.badgeText}>Current Plan</ThemedText>
                   </View>
                 )}
 
                 <View style={styles.planHeader}>
-                  <Text style={styles.planName}>{plan.name}</Text>
-                  <Text style={styles.planDescription}>{plan.description}</Text>
+                  <ThemedText style={styles.planName}>{plan.name}</ThemedText>
+                  <ThemedText style={styles.planDescription}>{plan.description}</ThemedText>
                   <View style={styles.priceContainer}>
-                    <Text style={styles.price}>
+                    <ThemedText style={styles.price}>
                       ${(price.amount / 100).toFixed(0)}
-                    </Text>
-                    <Text style={styles.interval}>/{price.interval || 'month'}</Text>
+                    </ThemedText>
+                    <ThemedText style={styles.interval}>/{price.interval || 'month'}</ThemedText>
                   </View>
                 </View>
 
                 <View style={styles.features}>
                   <View style={styles.feature}>
-                    <Text style={styles.checkmark}>✓</Text>
-                    <Text style={styles.featureText}>All features included</Text>
+                    <ThemedText style={styles.checkmark}>✓</ThemedText>
+                    <ThemedText style={styles.featureText}>All features included</ThemedText>
                   </View>
                   <View style={styles.feature}>
-                    <Text style={styles.checkmark}>✓</Text>
-                    <Text style={styles.featureText}>Priority support</Text>
+                    <ThemedText style={styles.checkmark}>✓</ThemedText>
+                    <ThemedText style={styles.featureText}>Priority support</ThemedText>
                   </View>
                   <View style={styles.feature}>
-                    <Text style={styles.checkmark}>✓</Text>
-                    <Text style={styles.featureText}>Cancel anytime</Text>
+                    <ThemedText style={styles.checkmark}>✓</ThemedText>
+                    <ThemedText style={styles.featureText}>Cancel anytime</ThemedText>
                   </View>
                   {plan.isRecurring && (
                     <View style={styles.feature}>
-                      <Text style={styles.checkmark}>✓</Text>
-                      <Text style={styles.featureText}>Recurring billing</Text>
+                      <ThemedText style={styles.checkmark}>✓</ThemedText>
+                      <ThemedText style={styles.featureText}>Recurring billing</ThemedText>
                     </View>
                   )}
                 </View>
@@ -211,10 +213,10 @@ export default function PricingScreen() {
                   {loadingPriceId === price.id ? (
                     <View style={styles.loadingButtonContent}>
                       <ActivityIndicator size="small" color="#fff" />
-                      <Text style={styles.buttonText}>Setting up...</Text>
+                      <ThemedText style={styles.buttonText}>Setting up...</ThemedText>
                     </View>
                   ) : (
-                    <Text style={[styles.buttonText, isCurrentPlan && styles.currentPlanButtonText]}>
+                    <ThemedText style={[styles.buttonText, isCurrentPlan && styles.currentPlanButtonText]}>
                       {isCurrentPlan
                         ? '✓ Current Plan'
                         : userSubscription?.status === 'active'
@@ -231,23 +233,23 @@ export default function PricingScreen() {
                             }
                           })()
                         : 'Get Started'}
-                    </Text>
+                    </ThemedText>
                   )}
                 </TouchableOpacity>
-              </View>
+              </ThemedView>
             );
           })}
       </View>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
+        <ThemedText style={styles.footerText}>
           Need a custom plan?{' '}
-          <Text style={styles.contactLink}>Contact us</Text>
-        </Text>
+          <ThemedText style={styles.contactLink}>Contact us</ThemedText>
+        </ThemedText>
         
         {error && (
           <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <ThemedText style={styles.errorText}>{error}</ThemedText>
           </View>
         )}
 
@@ -256,9 +258,9 @@ export default function PricingScreen() {
             (plan: any) => plan.prices[0].id === userSubscription.polarPriceId
           ) && (
             <View style={styles.warningContainer}>
-              <Text style={styles.warningText}>
+              <ThemedText style={styles.warningText}>
                 You have an active subscription that's not shown above. Contact support for assistance.
-              </Text>
+              </ThemedText>
             </View>
           )}
       </View>
@@ -269,7 +271,6 @@ export default function PricingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   contentContainer: {
     paddingHorizontal: 16,
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#666',
+    opacity: 0.7,
   },
   header: {
     alignItems: 'center',
@@ -298,8 +299,8 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    color: '#666',
     textAlign: 'center',
+    opacity: 0.7,
   },
   signedInBanner: {
     marginTop: 24,
@@ -326,7 +327,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   planCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
@@ -340,7 +340,6 @@ const styles = StyleSheet.create({
   currentPlanCard: {
     borderColor: '#4caf50',
     borderWidth: 2,
-    backgroundColor: '#f1f8e9',
   },
   badge: {
     position: 'absolute',
@@ -369,8 +368,8 @@ const styles = StyleSheet.create({
   },
   planDescription: {
     fontSize: 16,
-    color: '#666',
     marginBottom: 16,
+    opacity: 0.7,
   },
   priceContainer: {
     flexDirection: 'row',
@@ -382,8 +381,8 @@ const styles = StyleSheet.create({
   },
   interval: {
     fontSize: 16,
-    color: '#666',
     marginLeft: 4,
+    opacity: 0.7,
   },
   features: {
     marginBottom: 24,
@@ -434,8 +433,8 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
+    opacity: 0.7,
   },
   contactLink: {
     color: '#007AFF',

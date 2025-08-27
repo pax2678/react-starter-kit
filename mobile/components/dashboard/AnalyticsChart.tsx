@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -106,23 +107,23 @@ export default function AnalyticsChart() {
       onPress={() => setViewMode(mode)}
     >
       <View style={[styles.colorIndicator, { backgroundColor: color }]} />
-      <Text style={[
+      <ThemedText style={[
         styles.viewModeButtonText,
         viewMode === mode && styles.activeViewModeButtonText
       ]}>
         {title}
-      </Text>
+      </ThemedText>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <ThemedView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <IconSymbol size={24} color="#3B82F6" name="chart.line.uptrend.xyaxis" />
           <ThemedText style={styles.title}>Analytics Overview</ThemedText>
         </View>
-        <Text style={styles.subtitle}>Visitors for the last 12 days</Text>
+        <ThemedText style={styles.subtitle}>Visitors for the last 12 days</ThemedText>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.viewModeContainer}>
@@ -159,34 +160,33 @@ export default function AnalyticsChart() {
           <>
             <View style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: '#3B82F6' }]} />
-              <Text style={styles.legendText}>Desktop</Text>
+              <ThemedText style={styles.legendText}>Desktop</ThemedText>
             </View>
             <View style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: '#10B981' }]} />
-              <Text style={styles.legendText}>Mobile</Text>
+              <ThemedText style={styles.legendText}>Mobile</ThemedText>
             </View>
           </>
         )}
         {viewMode === 'desktop' && (
           <View style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: '#3B82F6' }]} />
-            <Text style={styles.legendText}>Desktop Visitors</Text>
+            <ThemedText style={styles.legendText}>Desktop Visitors</ThemedText>
           </View>
         )}
         {viewMode === 'mobile' && (
           <View style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: '#10B981' }]} />
-            <Text style={styles.legendText}>Mobile Visitors</Text>
+            <ThemedText style={styles.legendText}>Mobile Visitors</ThemedText>
           </View>
         )}
       </View>
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
@@ -208,11 +208,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#000000',
   },
   subtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    opacity: 0.7,
   },
   viewModeContainer: {
     marginBottom: 16,
@@ -274,7 +273,7 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 12,
-    color: '#6B7280',
     fontWeight: '500',
+    opacity: 0.7,
   },
 });

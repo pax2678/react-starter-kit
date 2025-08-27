@@ -91,7 +91,7 @@ export default function SettingsScreen() {
       <ScrollView style={styles.container}>
         <ThemedView style={styles.content}>
           <ThemedText type="title" style={styles.title}>Settings</ThemedText>
-          <View style={styles.card}>
+          <ThemedView style={styles.card}>
             <ThemedText type="subtitle">Sign In Required</ThemedText>
             <ThemedText style={styles.description}>
               Please sign in to access settings
@@ -100,9 +100,9 @@ export default function SettingsScreen() {
               style={styles.button}
               onPress={() => router.push('/sign-in')}
             >
-              <Text style={styles.buttonText}>Sign In</Text>
+              <ThemedText style={styles.buttonText}>Sign In</ThemedText>
             </TouchableOpacity>
-          </View>
+          </ThemedView>
         </ThemedView>
       </ScrollView>
     );
@@ -123,7 +123,7 @@ export default function SettingsScreen() {
         </View>
 
         {/* User Information */}
-        <View style={styles.card}>
+        <ThemedView style={styles.card}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>Account Information</ThemedText>
           <View style={styles.infoRow}>
             <ThemedText style={styles.label}>Name</ThemedText>
@@ -143,26 +143,26 @@ export default function SettingsScreen() {
               {new Date(user?.createdAt || '').toLocaleDateString()}
             </ThemedText>
           </View>
-        </View>
+        </ThemedView>
 
         {/* Subscription Status */}
-        <View style={styles.card}>
+        <ThemedView style={styles.card}>
           <View style={styles.subscriptionHeader}>
             <ThemedText type="subtitle" style={styles.sectionTitle}>Subscription Status</ThemedText>
             {(subscription || subscriptionStatus?.hasActiveSubscription) && (
               <View style={[styles.statusBadge, { backgroundColor: getStatusColor(subscription?.status || 'active') }]}>
-                <Text style={styles.statusText}>
+                <ThemedText style={styles.statusText}>
                   {subscription?.status || 'active'}
-                </Text>
+                </ThemedText>
               </View>
             )}
           </View>
           
           {subscription === undefined ? (
-            <View style={styles.loadingContainer}>
+            <ThemedView style={styles.loadingContainer}>
               <ActivityIndicator size="small" color="#007AFF" />
               <ThemedText style={styles.loadingText}>Loading subscription details...</ThemedText>
-            </View>
+            </ThemedView>
           ) : !subscriptionStatus?.hasActiveSubscription ? (
             <View>
               <ThemedText style={styles.description}>
@@ -172,7 +172,7 @@ export default function SettingsScreen() {
                 style={styles.button}
                 onPress={() => router.push('/pricing')}
               >
-                <Text style={styles.buttonText}>View Plans</Text>
+                <ThemedText style={styles.buttonText}>View Plans</ThemedText>
               </TouchableOpacity>
             </View>
           ) : (
@@ -223,28 +223,28 @@ export default function SettingsScreen() {
                 {loadingPortal ? (
                   <ActivityIndicator size="small" color="#007AFF" />
                 ) : (
-                  <Text style={[styles.buttonText, styles.outlineButtonText]}>
+                  <ThemedText style={[styles.buttonText, styles.outlineButtonText]}>
                     Manage Subscription
-                  </Text>
+                  </ThemedText>
                 )}
               </TouchableOpacity>
             </View>
           )}
-        </View>
+        </ThemedView>
 
         {/* Settings Options */}
-        <View style={styles.card}>
+        <ThemedView style={styles.card}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>Preferences</ThemedText>
           
           <TouchableOpacity style={styles.settingItem}>
             <IconSymbol size={24} color="#007AFF" name="bell" />
-            <Text style={styles.settingText}>Notifications</Text>
+            <ThemedText style={styles.settingText}>Notifications</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.settingItem}>
             <IconSymbol size={24} color="#007AFF" name="lock" />
-            <Text style={styles.settingText}>Privacy & Security</Text>
+            <ThemedText style={styles.settingText}>Privacy & Security</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
@@ -253,10 +253,10 @@ export default function SettingsScreen() {
             onPress={() => router.push('/pricing')}
           >
             <IconSymbol size={24} color="#007AFF" name="creditcard" />
-            <Text style={styles.settingText}>Billing & Plans</Text>
+            <ThemedText style={styles.settingText}>Billing & Plans</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
-        </View>
+        </ThemedView>
       </ThemedView>
     </ScrollView>
   );
@@ -287,14 +287,12 @@ const styles = StyleSheet.create({
     width: 40,
   },
   card: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
   },
   sectionTitle: {
     marginBottom: 16,
-    color: '#000000',
     fontSize: 18,
     fontWeight: '600',
   },
@@ -309,11 +307,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#000000',
   },
   value: {
     fontSize: 16,
-    color: '#666666',
+    opacity: 0.7,
   },
   subscriptionHeader: {
     flexDirection: 'row',
@@ -338,10 +335,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   loadingText: {
-    color: '#666666',
+    opacity: 0.7,
   },
   description: {
-    color: '#666666',
+    opacity: 0.7,
     marginBottom: 16,
   },
   subscriptionDetails: {
@@ -364,12 +361,11 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#666666',
+    opacity: 0.7,
   },
   detailValue: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000000',
   },
   warningCard: {
     backgroundColor: '#FEF3C7',
@@ -414,7 +410,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 12,
-    color: '#000000',
     fontWeight: '500',
   },
 });

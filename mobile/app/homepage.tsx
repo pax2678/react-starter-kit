@@ -107,7 +107,7 @@ export default function HomepageScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {/* Header/Navbar */}
-      <View style={styles.header}>
+      <ThemedView style={styles.header}>
         <View style={styles.headerContent}>
           <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
           <View style={styles.headerActions}>
@@ -119,42 +119,42 @@ export default function HomepageScreen() {
                 style={styles.signInButton}
                 onPress={() => router.push('/sign-in')}
               >
-                <Text style={styles.signInButtonText}>Login</Text>
+                <ThemedText style={styles.signInButtonText}>Login</ThemedText>
               </TouchableOpacity>
             )}
           </View>
         </View>
-      </View>
+      </ThemedView>
 
       {/* Hero/Integrations Section */}
-      <View style={styles.heroSection}>
+      <ThemedView style={styles.heroSection}>
         <View style={styles.integrationGrid}>
           <View style={styles.integrationRow}>
-            <View style={styles.integrationCard}>
+            <ThemedView style={styles.integrationCard}>
               <ThemedText style={styles.integrationText}>React Router</ThemedText>
-            </View>
-            <View style={styles.integrationCard}>
+            </ThemedView>
+            <ThemedView style={styles.integrationCard}>
               <ThemedText style={styles.integrationText}>Convex</ThemedText>
-            </View>
+            </ThemedView>
           </View>
           <View style={styles.integrationRow}>
-            <View style={styles.integrationCard}>
+            <ThemedView style={styles.integrationCard}>
               <ThemedText style={styles.integrationText}>React</ThemedText>
-            </View>
-            <View style={[styles.integrationCard, styles.mainCard]}>
+            </ThemedView>
+            <ThemedView style={[styles.integrationCard, styles.mainCard]}>
               <Image source={require('@/assets/images/icon.png')} style={styles.cardLogo} />
-            </View>
-            <View style={styles.integrationCard}>
+            </ThemedView>
+            <ThemedView style={styles.integrationCard}>
               <ThemedText style={styles.integrationText}>Tailwind</ThemedText>
-            </View>
+            </ThemedView>
           </View>
           <View style={styles.integrationRow}>
-            <View style={styles.integrationCard}>
+            <ThemedView style={styles.integrationCard}>
               <ThemedText style={styles.integrationText}>TypeScript</ThemedText>
-            </View>
-            <View style={styles.integrationCard}>
+            </ThemedView>
+            <ThemedView style={styles.integrationCard}>
               <ThemedText style={styles.integrationText}>Polar</ThemedText>
-            </View>
+            </ThemedView>
           </View>
         </View>
 
@@ -168,17 +168,17 @@ export default function HomepageScreen() {
           
           <View style={styles.heroButtons}>
             <TouchableOpacity style={styles.primaryButton} onPress={handleGetStarted}>
-              <Text style={styles.primaryButtonText}>{getStartedText()}</Text>
+              <ThemedText style={styles.primaryButtonText}>{getStartedText()}</ThemedText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.secondaryButton} onPress={handleGitHubPress}>
-              <Text style={styles.secondaryButtonText}>⭐️ Star on GitHub</Text>
+              <ThemedText style={styles.secondaryButtonText}>⭐️ Star on GitHub</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </ThemedView>
 
       {/* Content/Features Section */}
-      <View style={styles.featuresSection}>
+      <ThemedView style={styles.featuresSection}>
         <ThemedText type="title" style={styles.featuresTitle}>
           The Starter Kit you need to start your SaaS application.
         </ThemedText>
@@ -190,14 +190,14 @@ export default function HomepageScreen() {
             <ThemedText style={styles.boldText}>From idea to launch in weeks,</ThemedText> not months. With TypeScript safety, modern UI components, and scalable architecture built-in, you can validate your business concept and start generating revenue while your competitors are still setting up their development environment.
           </ThemedText>
           <TouchableOpacity style={styles.learnMoreButton}>
-            <Text style={styles.learnMoreText}>Learn More</Text>
+            <ThemedText style={styles.learnMoreText}>Learn More</ThemedText>
             <IconSymbol size={16} color="#007AFF" name="chevron.right" />
           </TouchableOpacity>
         </View>
-      </View>
+      </ThemedView>
 
       {/* Team Section */}
-      <View style={styles.teamSection}>
+      <ThemedView style={styles.teamSection}>
         <ThemedText type="title" style={styles.teamTitle}>Our team</ThemedText>
         <ThemedText style={styles.teamSubtitle}>Leadership</ThemedText>
         <View style={styles.teamGrid}>
@@ -209,10 +209,10 @@ export default function HomepageScreen() {
             </View>
           ))}
         </View>
-      </View>
+      </ThemedView>
 
       {/* Pricing Section */}
-      <View style={styles.pricingSection}>
+      <ThemedView style={styles.pricingSection}>
         <ThemedText type="title" style={styles.pricingTitle}>
           Pricing that Scales with You
         </ThemedText>
@@ -247,19 +247,19 @@ export default function HomepageScreen() {
                 console.log(`  - amount match: ${userSubscription?.amount === price.amount}`);
                 
                 return (
-                  <View key={plan.id} style={[
+                  <ThemedView key={plan.id} style={[
                     styles.planCard, 
                     isPopular && !isCurrentPlan && styles.popularCard,
                     isCurrentPlan && styles.currentPlanCard
                   ]}>
                     {isPopular && !isCurrentPlan && (
                       <View style={styles.popularBadge}>
-                        <Text style={styles.badgeText}>Popular</Text>
+                        <ThemedText style={styles.badgeText}>Popular</ThemedText>
                       </View>
                     )}
                     {isCurrentPlan && (
                       <View style={styles.currentPlanBadge}>
-                        <Text style={styles.badgeText}>Current Plan</Text>
+                        <ThemedText style={styles.badgeText}>Current Plan</ThemedText>
                       </View>
                     )}
                     <View style={styles.planHeader}>
@@ -275,15 +275,15 @@ export default function HomepageScreen() {
                     
                     <View style={styles.features}>
                       <View style={styles.feature}>
-                        <Text style={styles.checkmark}>✓</Text>
+                        <ThemedText style={styles.checkmark}>✓</ThemedText>
                         <ThemedText style={styles.featureText}>All features included</ThemedText>
                       </View>
                       <View style={styles.feature}>
-                        <Text style={styles.checkmark}>✓</Text>
+                        <ThemedText style={styles.checkmark}>✓</ThemedText>
                         <ThemedText style={styles.featureText}>Priority support</ThemedText>
                       </View>
                       <View style={styles.feature}>
-                        <Text style={styles.checkmark}>✓</Text>
+                        <ThemedText style={styles.checkmark}>✓</ThemedText>
                         <ThemedText style={styles.featureText}>Cancel anytime</ThemedText>
                       </View>
                     </View>
@@ -296,7 +296,7 @@ export default function HomepageScreen() {
                       ]}
                       onPress={() => router.push('/pricing')}
                     >
-                      <Text style={[
+                      <ThemedText style={[
                         styles.planButtonText, 
                         isCurrentPlan && styles.currentPlanButtonText,
                         isPopular && !isCurrentPlan && styles.popularButtonText
@@ -317,17 +317,17 @@ export default function HomepageScreen() {
                             })()
                           : "Get Started (Demo)"
                         }
-                      </Text>
+                      </ThemedText>
                     </TouchableOpacity>
-                  </View>
+                  </ThemedView>
                 );
               })}
           </View>
         )}
-      </View>
+      </ThemedView>
 
       {/* Footer Section */}
-      <View style={styles.footer}>
+      <ThemedView style={styles.footer}>
         <Image source={require('@/assets/images/icon.png')} style={styles.footerLogo} />
         <TouchableOpacity 
           style={styles.socialLink}
@@ -338,7 +338,7 @@ export default function HomepageScreen() {
         <ThemedText style={styles.copyright}>
           © {new Date().getFullYear()} RSK, All rights reserved
         </ThemedText>
-      </View>
+      </ThemedView>
     </ScrollView>
   );
 }
@@ -346,7 +346,6 @@ export default function HomepageScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   
   // Header
@@ -354,7 +353,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 20,
-    backgroundColor: '#fff',
   },
   headerContent: {
     flexDirection: 'row',
@@ -390,7 +388,6 @@ const styles = StyleSheet.create({
   heroSection: {
     paddingHorizontal: 20,
     paddingVertical: 40,
-    backgroundColor: '#f8f9fa',
   },
   integrationGrid: {
     alignItems: 'center',
@@ -405,7 +402,6 @@ const styles = StyleSheet.create({
   integrationCard: {
     width: 60,
     height: 60,
-    backgroundColor: '#fff',
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -437,10 +433,10 @@ const styles = StyleSheet.create({
   },
   heroDescription: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 24,
+    opacity: 0.7,
   },
   heroButtons: {
     flexDirection: 'column',
@@ -490,7 +486,7 @@ const styles = StyleSheet.create({
   featuresDescription: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#444',
+    opacity: 0.8,
   },
   boldText: {
     fontWeight: '700',
@@ -511,7 +507,6 @@ const styles = StyleSheet.create({
   teamSection: {
     paddingHorizontal: 20,
     paddingVertical: 40,
-    backgroundColor: '#f8f9fa',
   },
   teamTitle: {
     fontSize: 28,
@@ -522,7 +517,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     marginBottom: 24,
-    color: '#666',
+    opacity: 0.7,
   },
   teamGrid: {
     flexDirection: 'row',
@@ -548,8 +543,8 @@ const styles = StyleSheet.create({
   },
   memberRole: {
     fontSize: 12,
-    color: '#666',
     textAlign: 'center',
+    opacity: 0.7,
   },
 
   // Pricing Section
@@ -565,10 +560,10 @@ const styles = StyleSheet.create({
   },
   pricingSubtitle: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
     marginBottom: 40,
     lineHeight: 24,
+    opacity: 0.7,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -576,13 +571,12 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 12,
-    color: '#666',
+    opacity: 0.7,
   },
   plansContainer: {
     gap: 20,
   },
   planCard: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 24,
     borderWidth: 1,
@@ -596,7 +590,6 @@ const styles = StyleSheet.create({
   currentPlanCard: {
     borderColor: '#4caf50',
     borderWidth: 2,
-    backgroundColor: '#f1f8e9',
   },
   popularBadge: {
     position: 'absolute',
@@ -640,12 +633,12 @@ const styles = StyleSheet.create({
   },
   interval: {
     fontSize: 16,
-    color: '#666',
     marginLeft: 4,
+    opacity: 0.7,
   },
   planDescription: {
     fontSize: 14,
-    color: '#666',
+    opacity: 0.7,
   },
   features: {
     marginBottom: 24,
@@ -666,9 +659,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   planButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#007AFF',
+    backgroundColor: '#007AFF',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -680,7 +671,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#6c757d',
   },
   planButtonText: {
-    color: '#007AFF',
+    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -696,7 +687,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 40,
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
   },
   footerLogo: {
     width: 40,
@@ -708,7 +698,7 @@ const styles = StyleSheet.create({
   },
   copyright: {
     fontSize: 14,
-    color: '#666',
     textAlign: 'center',
+    opacity: 0.7,
   },
 });

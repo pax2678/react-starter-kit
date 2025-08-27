@@ -56,14 +56,14 @@ export default function DashboardScreen() {
             style={styles.button}
             onPress={() => router.push('/sign-in')}
           >
-            <Text style={styles.buttonText}>Sign In</Text>
+            <ThemedText style={styles.buttonText}>Sign In</ThemedText>
           </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.button, styles.secondaryButton]}
             onPress={() => router.push('/sign-up')}
           >
-            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Sign Up</Text>
+            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Sign Up</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>
@@ -100,14 +100,14 @@ export default function DashboardScreen() {
             style={styles.button}
             onPress={() => router.push('/pricing')}
           >
-            <Text style={styles.buttonText}>View Plans</Text>
+            <ThemedText style={styles.buttonText}>View Plans</ThemedText>
           </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.button, styles.secondaryButton]}
             onPress={() => router.push('/(tabs)')}
           >
-            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Go Back</Text>
+            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Go Back</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>
@@ -130,7 +130,7 @@ export default function DashboardScreen() {
         <AnalyticsChart />
 
         {/* Quick Actions */}
-        <View style={styles.quickActions}>
+        <ThemedView style={styles.quickActions}>
           <ThemedText type="subtitle" style={styles.sectionTitle}>Quick Actions</ThemedText>
           
           <TouchableOpacity 
@@ -138,7 +138,7 @@ export default function DashboardScreen() {
             onPress={() => Alert.alert('Coming Soon', 'Chat feature will be implemented next')}
           >
             <IconSymbol size={24} color="#007AFF" name="bubble.left" />
-            <Text style={styles.actionButtonText}>AI Chat</Text>
+            <ThemedText style={styles.actionButtonText}>AI Chat</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
@@ -147,10 +147,10 @@ export default function DashboardScreen() {
             onPress={() => router.push('/settings')}
           >
             <IconSymbol size={24} color="#007AFF" name="gearshape" />
-            <Text style={styles.actionButtonText}>Settings</Text>
+            <ThemedText style={styles.actionButtonText}>Settings</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
-        </View>
+        </ThemedView>
       </ThemedView>
     </ScrollView>
   );
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     textAlign: 'center',
     fontSize: 16,
-    color: '#666',
+    opacity: 0.7,
   },
   subtitle: {
     textAlign: 'center',
@@ -198,12 +198,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   quickActions: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
   },
   sectionTitle: {
-    color: '#000000',
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
@@ -219,7 +217,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 12,
-    color: '#000000',
     fontWeight: '500',
   },
   button: {

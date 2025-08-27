@@ -131,14 +131,14 @@ export default function ProfileScreen() {
             style={styles.button}
             onPress={() => router.push('/sign-in')}
           >
-            <Text style={styles.buttonText}>Sign In</Text>
+            <ThemedText style={styles.buttonText}>Sign In</ThemedText>
           </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.button, styles.secondaryButton]}
             onPress={() => router.push('/sign-up')}
           >
-            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Sign Up</Text>
+            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Sign Up</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>
@@ -151,7 +151,7 @@ export default function ProfileScreen() {
         <ThemedText type="title" style={styles.title}>Profile</ThemedText>
         
         {/* User Profile Section */}
-        <View style={styles.profileSection}>
+        <ThemedView style={styles.profileSection}>
           {user?.imageUrl ? (
             <Image 
               source={{ uri: user.imageUrl }} 
@@ -174,7 +174,7 @@ export default function ProfileScreen() {
               Member since {new Date(user?.createdAt || '').toLocaleDateString()}
             </ThemedText>
           </View>
-        </View>
+        </ThemedView>
 
         {/* Account Actions */}
         <ThemedView style={styles.section}>
@@ -185,7 +185,7 @@ export default function ProfileScreen() {
             onPress={() => router.push('/settings')}
           >
             <IconSymbol size={24} color="#007AFF" name="person.circle" />
-            <Text style={styles.menuItemText}>Account Settings</Text>
+            <ThemedText style={styles.menuItemText}>Account Settings</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
@@ -194,7 +194,7 @@ export default function ProfileScreen() {
             onPress={() => router.push('/pricing')}
           >
             <IconSymbol size={24} color="#007AFF" name="creditcard" />
-            <Text style={styles.menuItemText}>Subscription & Billing</Text>
+            <ThemedText style={styles.menuItemText}>Subscription & Billing</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
         </ThemedView>
@@ -208,7 +208,7 @@ export default function ProfileScreen() {
             onPress={() => router.push('/settings')}
           >
             <IconSymbol size={24} color="#007AFF" name="bell" />
-            <Text style={styles.menuItemText}>Notifications</Text>
+            <ThemedText style={styles.menuItemText}>Notifications</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
@@ -217,7 +217,7 @@ export default function ProfileScreen() {
             onPress={() => router.push('/settings')}
           >
             <IconSymbol size={24} color="#007AFF" name="lock" />
-            <Text style={styles.menuItemText}>Privacy & Security</Text>
+            <ThemedText style={styles.menuItemText}>Privacy & Security</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
         </ThemedView>
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
           style={[styles.button, styles.logoutButton]}
           onPress={handleSignOut}
         >
-          <Text style={[styles.buttonText, styles.logoutButtonText]}>Sign Out</Text>
+          <ThemedText style={[styles.buttonText, styles.logoutButtonText]}>Sign Out</ThemedText>
         </TouchableOpacity>
       </ThemedView>
     </ScrollView>
@@ -256,7 +256,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   profileSection: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -284,25 +283,22 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     marginBottom: 4,
-    color: '#000000',
   },
   userEmail: {
     fontSize: 16,
-    color: '#666666',
     marginBottom: 4,
+    opacity: 0.7,
   },
   userDetails: {
     fontSize: 14,
-    color: '#888888',
+    opacity: 0.6,
   },
   section: {
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
   },
   sectionTitle: {
-    color: '#000000',
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
@@ -318,7 +314,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 12,
-    color: '#000000',
     fontWeight: '500',
   },
   button: {
