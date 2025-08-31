@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useAuth, useUser } from '@clerk/clerk-expo';
-import { useAction, useQuery } from 'convex/react';
+import { useAction, useQuery, useMutation } from 'convex/react';
 import { router } from 'expo-router';
 import { api } from 'convex/_generated/api';
 
@@ -47,10 +47,11 @@ const members = [
 ];
 
 export default function HomepageScreen() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
   const { user } = useUser();
   const [plans, setPlans] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const getPlans = useAction(api.subscriptions.getAvailablePlans);
   const subscriptionStatus = useQuery(
@@ -58,7 +59,17 @@ export default function HomepageScreen() {
     isSignedIn ? { userId: user?.id } : "skip"
   );
   const userSubscription = useQuery(api.subscriptions.fetchUserSubscription);
+  const createCheckout = useAction(api.subscriptions.createCheckoutSession);
+  const createPortalUrl = useAction(api.subscriptions.createCustomerPortalUrl);
+  const upsertUser = useMutation(api.users.upsertUser);
 
+
+  // Sync user when signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      upsertUser().catch(console.error);
+    }
+  }, [isSignedIn, upsertUser]);
 
   // Debug logging for subscription data
   useEffect(() => {
@@ -96,6 +107,47 @@ export default function HomepageScreen() {
 
   const handleGitHubPress = async () => {
     await Linking.openURL('https://github.com/michaelshimeles/react-starter-kit');
+  };
+
+  const handleSubscribe = async (priceId: string) => {
+    if (!isSignedIn) {
+      router.push('/sign-in');
+      return;
+    }
+
+    setLoadingPriceId(priceId);
+    setError(null);
+
+    try {
+      // Ensure user exists in database before action
+      await upsertUser();
+
+      // If user has active subscription, redirect to customer portal for plan changes
+      if (
+        subscriptionStatus?.hasActiveSubscription &&
+        userSubscription?.customerId
+      ) {
+        const portalResult = await createPortalUrl({
+          customerId: userSubscription.customerId,
+        });
+        await Linking.openURL(portalResult.url);
+        setLoadingPriceId(null);
+        return;
+      }
+
+      // Otherwise, create new checkout for first-time subscription
+      const checkoutUrl = await createCheckout({ priceId });
+      await Linking.openURL(checkoutUrl);
+    } catch (error) {
+      console.error('Failed to process subscription action:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to process request. Please try again.';
+      setError(errorMessage);
+      setLoadingPriceId(null);
+      Alert.alert('Error', errorMessage);
+    }
   };
 
   const getStartedText = () => {
@@ -292,32 +344,41 @@ export default function HomepageScreen() {
                       style={[
                         styles.planButton, 
                         isCurrentPlan && styles.currentPlanButton,
-                        isPopular && !isCurrentPlan && styles.popularButton
+                        isPopular && !isCurrentPlan && styles.popularButton,
+                        loadingPriceId === price.id && styles.loadingButton
                       ]}
-                      onPress={() => router.push('/pricing')}
+                      onPress={() => handleSubscribe(price.id)}
+                      disabled={loadingPriceId === price.id}
                     >
-                      <ThemedText style={[
-                        styles.planButtonText, 
-                        isCurrentPlan && styles.currentPlanButtonText,
-                        isPopular && !isCurrentPlan && styles.popularButtonText
-                      ]}>
-                        {isCurrentPlan
-                          ? "✓ Current Plan"
-                          : userSubscription?.status === "active"
-                          ? (() => {
-                              const currentAmount = userSubscription.amount || 0;
-                              const newAmount = price.amount;
-                              if (newAmount > currentAmount) {
-                                return `Upgrade (+$${((newAmount - currentAmount) / 100).toFixed(0)}/mo)`;
-                              } else if (newAmount < currentAmount) {
-                                return `Downgrade (-$${((currentAmount - newAmount) / 100).toFixed(0)}/mo)`;
-                              } else {
-                                return "Manage Plan";
-                              }
-                            })()
-                          : "Get Started (Demo)"
-                        }
-                      </ThemedText>
+                      {loadingPriceId === price.id ? (
+                        <View style={styles.loadingButtonContent}>
+                          <ActivityIndicator size="small" color="#fff" />
+                          <ThemedText style={styles.planButtonText}>Setting up...</ThemedText>
+                        </View>
+                      ) : (
+                        <ThemedText style={[
+                          styles.planButtonText, 
+                          isCurrentPlan && styles.currentPlanButtonText,
+                          isPopular && !isCurrentPlan && styles.popularButtonText
+                        ]}>
+                          {isCurrentPlan
+                            ? "✓ Current Plan"
+                            : userSubscription?.status === "active"
+                            ? (() => {
+                                const currentAmount = userSubscription.amount || 0;
+                                const newAmount = price.amount;
+                                if (newAmount > currentAmount) {
+                                  return `Upgrade (+$${((newAmount - currentAmount) / 100).toFixed(0)}/mo)`;
+                                } else if (newAmount < currentAmount) {
+                                  return `Downgrade (-$${((currentAmount - newAmount) / 100).toFixed(0)}/mo)`;
+                                } else {
+                                  return "Manage Plan";
+                                }
+                              })()
+                            : "Get Started"
+                          }
+                        </ThemedText>
+                      )}
                     </TouchableOpacity>
                   </ThemedView>
                 );
@@ -669,6 +730,14 @@ const styles = StyleSheet.create({
   },
   currentPlanButton: {
     backgroundColor: '#6c757d',
+  },
+  loadingButton: {
+    opacity: 0.7,
+  },
+  loadingButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   planButtonText: {
     color: '#fff',
