@@ -144,10 +144,10 @@ export default function DashboardScreen() {
           
           <TouchableOpacity 
             style={styles.actionButton}
-            onPress={() => router.push('/settings')}
+            onPress={() => router.push('/pricing')}
           >
             <IconSymbol size={24} color="#007AFF" name="gearshape" />
-            <ThemedText style={styles.actionButtonText}>Settings</ThemedText>
+            <ThemedText style={styles.actionButtonText}>Billing & Plans</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
         </ThemedView>

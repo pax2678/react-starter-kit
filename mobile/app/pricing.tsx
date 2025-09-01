@@ -104,6 +104,29 @@ export default function PricingScreen() {
     }
   };
 
+  const formatAmount = (amount?: number, currency?: string) => {
+    if (!amount) return '$0.00';
+    return `$${(amount / 100).toFixed(2)} ${(currency || 'USD').toUpperCase()}`;
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return '#10B981'; // green
+      case "canceled":
+        return '#EF4444'; // red
+      case "past_due":
+        return '#F59E0B'; // yellow
+      default:
+        return '#6B7280'; // gray
+    }
+  };
+
   if (!plans) {
     return (
       <View style={styles.loadingContainer}>
@@ -129,6 +152,46 @@ export default function PricingScreen() {
           </View>
         )}
       </View>
+
+      {/* Current Subscription Information */}
+      {isSignedIn && subscriptionStatus?.hasActiveSubscription && userSubscription && (
+        <ThemedView style={styles.currentSubscriptionCard}>
+          <View style={styles.subscriptionHeader}>
+            <ThemedText style={styles.sectionTitle}>Current Subscription</ThemedText>
+            {userSubscription.status && (
+              <View style={[styles.statusBadge, { backgroundColor: getStatusColor(userSubscription.status) }]}>
+                <ThemedText style={styles.statusText}>
+                  {userSubscription.status}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+          
+          <View style={styles.billingDetails}>
+            <View style={styles.billingItem}>
+              <ThemedText style={styles.billingLabel}>Amount</ThemedText>
+              <ThemedText style={styles.billingValue}>
+                {formatAmount(userSubscription.amount, userSubscription.currency)}
+              </ThemedText>
+            </View>
+            
+            <View style={styles.billingItem}>
+              <ThemedText style={styles.billingLabel}>Next Billing Date</ThemedText>
+              <ThemedText style={styles.billingValue}>
+                {formatDate(userSubscription.currentPeriodEnd)}
+              </ThemedText>
+            </View>
+
+            {userSubscription.cancelAtPeriodEnd && (
+              <View style={styles.warningCard}>
+                <ThemedText style={styles.warningText}>
+                  Your subscription will be canceled at the end of the current billing period.
+                </ThemedText>
+              </View>
+            )}
+          </View>
+        </ThemedView>
+      )}
 
       <View style={styles.plansContainer}>
         {plans.items
@@ -465,5 +528,61 @@ const styles = StyleSheet.create({
     color: '#e65100',
     textAlign: 'center',
     fontSize: 14,
+  },
+  currentSubscriptionCard: {
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#4caf50',
+  },
+  subscriptionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  statusText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  billingDetails: {
+    gap: 12,
+  },
+  billingItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  billingLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  billingValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    opacity: 0.8,
+  },
+  warningCard: {
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 8,
   },
 });

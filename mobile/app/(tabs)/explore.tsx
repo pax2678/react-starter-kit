@@ -228,7 +228,7 @@ export default function ProfileScreen() {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => router.push('/settings')}
+            onPress={openMobileProfile}
           >
             <IconSymbol size={24} color="#007AFF" name="bell" />
             <ThemedText style={styles.menuItemText}>Notifications</ThemedText>
@@ -237,7 +237,7 @@ export default function ProfileScreen() {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => router.push('/settings')}
+            onPress={openMobileProfile}
           >
             <IconSymbol size={24} color="#007AFF" name="lock" />
             <ThemedText style={styles.menuItemText}>Privacy & Security</ThemedText>
