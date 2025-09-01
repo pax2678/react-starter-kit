@@ -24,6 +24,7 @@ const MAPPING = {
   'creditcard': 'credit-card',
   'bell': 'notifications',
   'lock': 'lock',
+  'square.grid.2x2': 'dashboard',
 } as IconMapping;
 
 /**
