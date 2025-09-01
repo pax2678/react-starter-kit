@@ -2,6 +2,8 @@ import { StyleSheet, TouchableOpacity, Text, View, Alert, ScrollView, Platform }
 import { Image } from 'expo-image';
 import { useAuth, useUser, useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -11,6 +13,27 @@ export default function ProfileScreen() {
   const { isSignedIn, signOut: authSignOut } = useAuth();
   const { user } = useUser();
   const clerk = useClerk();
+
+  const openMobileProfile = async () => {
+    const frontendUrl = Constants.expoConfig?.extra?.frontendUrl;
+    
+    if (!frontendUrl) {
+      Alert.alert('Error', 'Frontend URL not configured');
+      return;
+    }
+
+    try {
+      // Open the mobile-optimized profile page
+      const profileUrl = `${frontendUrl}/mobile-profile`;
+      await WebBrowser.openBrowserAsync(profileUrl, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+        controlsColor: '#007AFF',
+      });
+    } catch (error) {
+      console.error('Failed to open profile manager:', error);
+      Alert.alert('Error', 'Failed to open profile settings');
+    }
+  };
 
   const handleSignOut = async () => {
     const performSignOut = async () => {
@@ -182,7 +205,7 @@ export default function ProfileScreen() {
           
           <TouchableOpacity 
             style={styles.menuItem}
-            onPress={() => router.push('/settings')}
+            onPress={openMobileProfile}
           >
             <IconSymbol size={24} color="#007AFF" name="person.circle" />
             <ThemedText style={styles.menuItemText}>Account Settings</ThemedText>

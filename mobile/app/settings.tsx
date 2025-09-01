@@ -4,6 +4,8 @@ import { useQuery, useAction, useMutation } from 'convex/react';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+import Constants from 'expo-constants';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -42,6 +44,27 @@ export default function SettingsScreen() {
       console.log('⚠️ fetchUserSubscription returned null - using fallback approach');
     }
   }, [subscription, subscriptionStatus, isSignedIn, userId]);
+
+  const openMobileProfile = async () => {
+    const frontendUrl = Constants.expoConfig?.extra?.frontendUrl;
+    
+    if (!frontendUrl) {
+      Alert.alert('Error', 'Frontend URL not configured');
+      return;
+    }
+
+    try {
+      // Open the mobile-optimized profile page
+      const profileUrl = `${frontendUrl}/mobile-profile`;
+      await WebBrowser.openBrowserAsync(profileUrl, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN,
+        controlsColor: '#007AFF',
+      });
+    } catch (error) {
+      console.error('Failed to open profile manager:', error);
+      Alert.alert('Error', 'Failed to open profile settings');
+    }
+  };
 
   const handleManageSubscription = async () => {
     if (!subscription?.customerId) {
@@ -234,17 +257,20 @@ export default function SettingsScreen() {
 
         {/* Settings Options */}
         <ThemedView style={styles.card}>
-          <ThemedText type="subtitle" style={styles.sectionTitle}>Preferences</ThemedText>
+          <ThemedText type="subtitle" style={styles.sectionTitle}>Account</ThemedText>
           
+          <TouchableOpacity 
+            style={styles.settingItem}
+            onPress={openMobileProfile}
+          >
+            <IconSymbol size={24} color="#007AFF" name="person.circle" />
+            <ThemedText style={styles.settingText}>Account Settings</ThemedText>
+            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.settingItem}>
             <IconSymbol size={24} color="#007AFF" name="bell" />
             <ThemedText style={styles.settingText}>Notifications</ThemedText>
-            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.settingItem}>
-            <IconSymbol size={24} color="#007AFF" name="lock" />
-            <ThemedText style={styles.settingText}>Privacy & Security</ThemedText>
             <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
           </TouchableOpacity>
           
