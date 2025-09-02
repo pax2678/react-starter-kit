@@ -32,7 +32,7 @@ export function NavUser({ user }: any) {
     (user?.firstName?.charAt(0) || "").toUpperCase() +
     (user?.lastName?.charAt(0) || "").toUpperCase();
   const userProfile = user.imageUrl;
-  const { signOut } = useClerk();
+  const { signOut, openUserProfile } = useClerk();
 
   return (
     <SidebarMenu>
@@ -82,7 +82,7 @@ export function NavUser({ user }: any) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openUserProfile()}>
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>
