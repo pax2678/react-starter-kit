@@ -93,7 +93,7 @@ export default function IntegrationsSection({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    ⭐️ Start on GitHub
+                    ⭐️ Star on GitHub
                   </Link>
                 </Button>
               </div>
