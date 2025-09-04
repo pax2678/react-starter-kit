@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Alert,
   Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
@@ -296,15 +297,17 @@ export default function ChatScreen() {
         </ThemedView>
 
         {/* Messages */}
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.messagesContainer}
-          contentContainerStyle={[styles.messagesContent, { paddingBottom: 20 }]}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="interactive"
-        >
-          {messages.length === 0 ? (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            ref={scrollViewRef}
+            style={styles.messagesContainer}
+            contentContainerStyle={[styles.messagesContent, { paddingBottom: 20 }]}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="never"
+            keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+            onScrollBeginDrag={() => Keyboard.dismiss()}
+          >
+            {messages.length === 0 ? (
             <ThemedView style={styles.emptyChat}>
               <IconSymbol size={60} color="#ccc" name="bubble.left.and.bubble.right" />
               <ThemedText type="subtitle" style={styles.emptyTitle}>
@@ -356,7 +359,8 @@ export default function ChatScreen() {
               </View>
             </View>
           )}
-        </ScrollView>
+          </ScrollView>
+        </TouchableWithoutFeedback>
 
         {/* Input */}
         <ThemedView style={styles.inputContainer}>
