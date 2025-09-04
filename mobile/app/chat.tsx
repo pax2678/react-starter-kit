@@ -81,6 +81,10 @@ export default function ChatScreen() {
     setInput('');
     setIsLoading(true);
 
+    // Platform detection for streaming vs non-streaming
+    const isAndroidExpoGo = Platform.OS === 'android';
+    console.log('🔍 Platform Detection - OS:', Platform.OS, 'isAndroidExpoGo:', isAndroidExpoGo);
+
     try {
       const token = await getToken();
       const convexSiteUrl = getConvexSiteUrl();
@@ -88,6 +92,7 @@ export default function ChatScreen() {
       
       console.log('🔍 Chat Debug - Making request to:', fullUrl);
       console.log('🔍 Chat Debug - token available:', !!token);
+      console.log('🔍 Chat Debug - Using streaming:', !isAndroidExpoGo);
       
       const response = await fetch(fullUrl, {
         method: 'POST',
@@ -107,11 +112,6 @@ export default function ChatScreen() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let assistantContent = '';
-
       const assistantMessageId = (Date.now() + 1).toString();
       const assistantMessage: Message = {
         id: assistantMessageId,
@@ -123,53 +123,101 @@ export default function ChatScreen() {
       // Add empty assistant message that we'll update
       setMessages(prev => [...prev, assistantMessage]);
 
-      if (reader) {
+      if (isAndroidExpoGo) {
+        // NON-STREAMING: Use response.text() for Android compatibility
+        console.log('🔍 Using response.text() for Android');
+        
         try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-
-            const chunk = decoder.decode(value, { stream: true });
-            console.log('🔍 Raw chunk:', chunk);
-            
-            const lines = chunk.split('\n').filter(line => line.trim());
-
-            for (const line of lines) {
-              console.log('🔍 Processing line:', line);
-              
-              if (line.startsWith('0:')) {
-                try {
-                  const jsonStr = line.slice(2);
-                  console.log('🔍 JSON string:', jsonStr);
-                  
-                  // The streaming data contains the text directly as a string
-                  const textContent = JSON.parse(jsonStr);
-                  if (typeof textContent === 'string') {
-                    assistantContent += textContent;
-                    console.log('🔍 Updated content length:', assistantContent.length);
-                    console.log('🔍 Updated content:', assistantContent.substring(0, 100) + '...');
-                    
-                    // Force update the assistant message content
-                    setMessages(prev => {
-                      const updated = prev.map(msg => 
-                        msg.id === assistantMessageId 
-                          ? { ...msg, content: assistantContent }
-                          : msg
-                      );
-                      console.log('🔍 Messages updated, assistant message:', updated.find(m => m.id === assistantMessageId)?.content?.substring(0, 50));
-                      return updated;
-                    });
-                  }
-                } catch (e) {
-                  console.warn('Failed to parse streaming data:', line, e);
+          const fullResponseText = await response.text();
+          console.log('🔍 Android - Full response text received:', fullResponseText.substring(0, 200) + '...');
+          
+          // Parse the complete response to extract the final text
+          const lines = fullResponseText.split('\n').filter(line => line.trim());
+          let assistantContent = '';
+          
+          for (const line of lines) {
+            if (line.startsWith('0:')) {
+              try {
+                const jsonStr = line.slice(2);
+                const textContent = JSON.parse(jsonStr);
+                if (typeof textContent === 'string') {
+                  assistantContent += textContent;
                 }
+              } catch (e) {
+                console.warn('Failed to parse line:', line, e);
               }
             }
           }
           
-          console.log('🔍 Final content:', assistantContent);
-        } catch (streamError) {
-          console.error('Streaming error:', streamError);
+          console.log('🔍 Android - Final parsed content:', assistantContent.substring(0, 100) + '...');
+          
+          // Update message with complete content
+          setMessages(prev => 
+            prev.map(msg => 
+              msg.id === assistantMessageId 
+                ? { ...msg, content: assistantContent }
+                : msg
+            )
+          );
+          
+        } catch (androidError) {
+          console.error('Android response processing error:', androidError);
+        }
+        
+      } else {
+        // STREAMING: Real-time updates (Web platforms)
+        console.log('🔍 Using streaming approach for Web');
+        
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let assistantContent = '';
+
+        if (reader) {
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+
+              const chunk = decoder.decode(value, { stream: true });
+              console.log('🔍 Raw chunk:', chunk);
+              
+              const lines = chunk.split('\n').filter(line => line.trim());
+
+              for (const line of lines) {
+                console.log('🔍 Processing line:', line);
+                
+                if (line.startsWith('0:')) {
+                  try {
+                    const jsonStr = line.slice(2);
+                    console.log('🔍 JSON string:', jsonStr);
+                    
+                    // The streaming data contains the text directly as a string
+                    const textContent = JSON.parse(jsonStr);
+                    if (typeof textContent === 'string') {
+                      assistantContent += textContent;
+                      console.log('🔍 Updated content length:', assistantContent.length);
+                      
+                      // Real-time update for streaming platforms
+                      setMessages(prev => {
+                        const updated = prev.map(msg => 
+                          msg.id === assistantMessageId 
+                            ? { ...msg, content: assistantContent }
+                            : msg
+                        );
+                        return updated;
+                      });
+                    }
+                  } catch (e) {
+                    console.warn('Failed to parse streaming data:', line, e);
+                  }
+                }
+              }
+            }
+            
+            console.log('🔍 Streaming complete, final content:', assistantContent);
+          } catch (streamError) {
+            console.error('Streaming error:', streamError);
+          }
         }
       }
     } catch (error) {
