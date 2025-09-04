@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Text,
   View,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useAuth, useUser } from '@clerk/clerk-expo';
@@ -135,7 +134,7 @@ export default function DashboardScreen() {
           
           <TouchableOpacity 
             style={styles.actionButton}
-            onPress={() => Alert.alert('Coming Soon', 'Chat feature will be implemented next')}
+            onPress={() => router.push('/chat')}
           >
             <IconSymbol size={24} color="#007AFF" name="bubble.left" />
             <ThemedText style={styles.actionButtonText}>AI Chat</ThemedText>
