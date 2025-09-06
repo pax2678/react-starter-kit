@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -46,12 +46,23 @@ const members = [
   },
 ];
 
-export default function HomepageScreen() {
+export interface HomepageScreenRef {
+  scrollToTop: () => void;
+}
+
+const HomepageScreen = forwardRef<HomepageScreenRef, {}>((props, ref) => {
   const { isSignedIn, userId } = useAuth();
   const { user } = useUser();
   const [plans, setPlans] = useState<any>(null);
   const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Refs for section scrolling
+  const scrollViewRef = useRef<ScrollView>(null);
+  const heroRef = useRef<View>(null);
+  const featuresRef = useRef<View>(null);
+  const teamRef = useRef<View>(null);
+  const pricingRef = useRef<View>(null);
 
   const getPlans = useAction(api.subscriptions.getAvailablePlans);
   const subscriptionStatus = useQuery(
@@ -70,6 +81,16 @@ export default function HomepageScreen() {
       upsertUser().catch(console.error);
     }
   }, [isSignedIn, upsertUser]);
+
+  // Expose scroll to top method
+  useImperativeHandle(ref, () => ({
+    scrollToTop: () => {
+      scrollViewRef.current?.scrollTo({ 
+        y: 0, 
+        animated: true 
+      });
+    }
+  }), []);
 
   // Debug logging for subscription data
   useEffect(() => {
@@ -156,9 +177,109 @@ export default function HomepageScreen() {
     return 'Subscribe Now (Demo)';
   };
 
+  // Section navigation data
+  const sections = [
+    { name: 'Features', ref: featuresRef, icon: 'star.fill' },
+    { name: 'Team', ref: teamRef, icon: 'person.3.fill' },
+    { name: 'Pricing', ref: pricingRef, icon: 'dollarsign.circle.fill' },
+  ];
+
+  // Track section positions to avoid remeasuring
+  const [sectionPositions, setSectionPositions] = useState<{[key: string]: number}>({});
+
+  // Measure all sections once when component mounts
+  useEffect(() => {
+    const measureSections = () => {
+      const refs = [
+        { name: 'hero', ref: heroRef },
+        { name: 'features', ref: featuresRef },
+        { name: 'team', ref: teamRef },
+        { name: 'pricing', ref: pricingRef },
+      ];
+      
+      const positions: {[key: string]: number} = {};
+      let measured = 0;
+      
+      refs.forEach(({ name, ref }) => {
+        if (ref.current && scrollViewRef.current) {
+          try {
+            // Use onLayout to measure position instead of measureLayout for Android compatibility
+            ref.current.measure((x, y, width, height, pageX, pageY) => {
+              positions[name] = pageY;
+              measured++;
+              if (measured === refs.length) {
+                setSectionPositions(positions);
+                console.log('Measured section positions:', positions);
+              }
+            });
+          } catch (error) {
+            console.log(`Failed to measure ${name} section:`, error);
+            // Fallback to estimated positions if measurement fails
+            const estimatedPositions = {
+              hero: 0,
+              features: 600,
+              team: 1200,
+              pricing: 1800
+            };
+            setSectionPositions(estimatedPositions);
+          }
+        }
+      });
+    };
+
+    // Delay measurement to ensure layout is complete
+    const timer = setTimeout(measureSections, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Scroll to section function using cached positions
+  const scrollToSection = (sectionRef: React.RefObject<View>) => {
+    if (!scrollViewRef.current) return;
+
+    // Determine which section this ref corresponds to
+    let sectionName = '';
+    if (sectionRef === heroRef) sectionName = 'hero';
+    else if (sectionRef === featuresRef) sectionName = 'features';
+    else if (sectionRef === teamRef) sectionName = 'team';
+    else if (sectionRef === pricingRef) sectionName = 'pricing';
+
+    const sectionY = sectionPositions[sectionName];
+    if (sectionY !== undefined) {
+      // Reduce header offset to position sections closer to top
+      const headerOffset = 20;
+      const targetY = Math.max(0, sectionY - headerOffset);
+      
+      console.log(`Scrolling to ${sectionName}:`, { sectionY, targetY, headerOffset });
+      scrollViewRef.current.scrollTo({ 
+        y: targetY, 
+        animated: true 
+      });
+    } else {
+      console.log(`No cached position for ${sectionName}, using fallback`);
+      // Fallback to estimated positions if cached position not available
+      const fallbackPositions = {
+        hero: 0,
+        features: 600,
+        team: 1200,
+        pricing: 1800
+      };
+      
+      const fallbackY = fallbackPositions[sectionName as keyof typeof fallbackPositions] || 0;
+      const headerOffset = 20;
+      const targetY = Math.max(0, fallbackY - headerOffset);
+      
+      console.log(`Using fallback position for ${sectionName}:`, { fallbackY, targetY });
+      scrollViewRef.current.scrollTo({ 
+        y: targetY, 
+        animated: true 
+      });
+    }
+  };
+
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header/Navbar */}
+    <View style={styles.mainContainer}>
+      <ScrollView ref={scrollViewRef} style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Header/Navbar */}
       <ThemedView style={styles.header}>
         <View style={styles.headerContent}>
           <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
@@ -179,7 +300,14 @@ export default function HomepageScreen() {
       </ThemedView>
 
       {/* Hero/Integrations Section */}
-      <ThemedView style={styles.heroSection}>
+      <ThemedView 
+        ref={heroRef} 
+        style={styles.heroSection}
+        onLayout={(event) => {
+          const { y } = event.nativeEvent.layout;
+          setSectionPositions(prev => ({ ...prev, hero: y }));
+        }}
+      >
         <View style={styles.integrationGrid}>
           <View style={styles.integrationRow}>
             <ThemedView style={styles.integrationCard}>
@@ -230,7 +358,14 @@ export default function HomepageScreen() {
       </ThemedView>
 
       {/* Content/Features Section */}
-      <ThemedView style={styles.featuresSection}>
+      <ThemedView 
+        ref={featuresRef} 
+        style={styles.featuresSection}
+        onLayout={(event) => {
+          const { y } = event.nativeEvent.layout;
+          setSectionPositions(prev => ({ ...prev, features: y }));
+        }}
+      >
         <ThemedText type="title" style={styles.featuresTitle}>
           The Starter Kit you need to start your SaaS application.
         </ThemedText>
@@ -249,7 +384,14 @@ export default function HomepageScreen() {
       </ThemedView>
 
       {/* Team Section */}
-      <ThemedView style={styles.teamSection}>
+      <ThemedView 
+        ref={teamRef} 
+        style={styles.teamSection}
+        onLayout={(event) => {
+          const { y } = event.nativeEvent.layout;
+          setSectionPositions(prev => ({ ...prev, team: y }));
+        }}
+      >
         <ThemedText type="title" style={styles.teamTitle}>Our team</ThemedText>
         <ThemedText style={styles.teamSubtitle}>Leadership</ThemedText>
         <View style={styles.teamGrid}>
@@ -264,7 +406,14 @@ export default function HomepageScreen() {
       </ThemedView>
 
       {/* Pricing Section */}
-      <ThemedView style={styles.pricingSection}>
+      <ThemedView 
+        ref={pricingRef} 
+        style={styles.pricingSection}
+        onLayout={(event) => {
+          const { y } = event.nativeEvent.layout;
+          setSectionPositions(prev => ({ ...prev, pricing: y }));
+        }}
+      >
         <ThemedText type="title" style={styles.pricingTitle}>
           Pricing that Scales with You
         </ThemedText>
@@ -400,11 +549,34 @@ export default function HomepageScreen() {
           © {new Date().getFullYear()} RSK, All rights reserved
         </ThemedText>
       </ThemedView>
-    </ScrollView>
+      </ScrollView>
+
+      {/* Floating Section Navigation */}
+      <View style={styles.floatingNav}>
+        <View style={styles.navContainer}>
+          {sections.map((section, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.navButton}
+              onPress={() => scrollToSection(section.ref)}
+            >
+              <IconSymbol size={18} color="#007AFF" name={section.icon} />
+              <ThemedText style={styles.navButtonText}>{section.name}</ThemedText>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    </View>
   );
-}
+});
+
+export default HomepageScreen;
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    position: 'relative',
+  },
   container: {
     flex: 1,
   },
@@ -769,5 +941,47 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     opacity: 0.7,
+  },
+
+  // Floating Navigation
+  floatingNav: {
+    position: 'absolute',
+    bottom: 5,
+    left: 20,
+    right: 20,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  navContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 25,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 122, 255, 0.1)',
+    gap: 4,
+  },
+  navButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 16,
+    minWidth: 70,
+  },
+  navButtonText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#007AFF',
+    marginTop: 2,
   },
 });
