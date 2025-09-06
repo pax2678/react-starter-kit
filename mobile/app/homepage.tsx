@@ -119,8 +119,8 @@ const HomepageScreen = forwardRef<HomepageScreenRef, {}>((props, ref) => {
     if (!isSignedIn) {
       router.push('/sign-up');
     } else if (subscriptionStatus?.hasActiveSubscription) {
-      // Navigate to dashboard when implemented
-      router.push('/(tabs)');
+      // Navigate to dashboard tab
+      router.push('/(tabs)/dashboard');
     } else {
       router.push('/pricing');
     }
