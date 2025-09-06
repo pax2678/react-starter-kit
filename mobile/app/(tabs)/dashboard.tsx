@@ -42,27 +42,53 @@ export default function DashboardScreen() {
         <ThemedView style={styles.content}>
           <IconSymbol 
             size={80} 
-            color="#808080" 
-            name="chart.bar" 
+            color="#007AFF" 
+            name="lock.shield" 
             style={styles.emptyIcon} 
           />
-          <ThemedText type="title" style={styles.title}>Dashboard</ThemedText>
+          <ThemedText type="title" style={styles.title}>Welcome to Dashboard</ThemedText>
           <ThemedText style={styles.subtitle}>
-            Sign in to access your dashboard and analytics
+            Create an account to access your personal dashboard with analytics, AI chat, and account management
           </ThemedText>
+          
+          <View style={styles.featuresList}>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#10B981" name="chart.line.uptrend.xyaxis" />
+              <ThemedText style={styles.featureText}>Real-time Analytics</ThemedText>
+            </View>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#3B82F6" name="bubble.left" />
+              <ThemedText style={styles.featureText}>AI Chat Assistant</ThemedText>
+            </View>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#8B5CF6" name="person.circle" />
+              <ThemedText style={styles.featureText}>Account Management</ThemedText>
+            </View>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#F59E0B" name="dollarsign.circle" />
+              <ThemedText style={styles.featureText}>Subscription Insights</ThemedText>
+            </View>
+          </View>
           
           <TouchableOpacity 
             style={styles.button}
-            onPress={() => router.push('/sign-in')}
+            onPress={() => router.push('/sign-up')}
           >
-            <ThemedText style={styles.buttonText}>Sign In</ThemedText>
+            <ThemedText style={styles.buttonText}>Get Started - Sign Up</ThemedText>
           </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => router.push('/sign-up')}
+            onPress={() => router.push('/sign-in')}
           >
-            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Sign Up</ThemedText>
+            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Already have an account? Sign In</ThemedText>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.linkButton}
+            onPress={() => router.push('/(tabs)')}
+          >
+            <ThemedText style={styles.linkButtonText}>← Back to Home</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>
@@ -86,27 +112,46 @@ export default function DashboardScreen() {
         <ThemedView style={styles.content}>
           <IconSymbol 
             size={80} 
-            color="#FF6B6B" 
-            name="lock.fill" 
+            color="#F59E0B" 
+            name="star.circle" 
             style={styles.emptyIcon} 
           />
-          <ThemedText type="title" style={styles.title}>Subscription Required</ThemedText>
+          <ThemedText type="title" style={styles.title}>Upgrade to Premium</ThemedText>
           <ThemedText style={styles.subtitle}>
-            You need an active subscription to access the dashboard
+            Hi {user?.firstName || 'there'}! Unlock your full dashboard with premium features
           </ThemedText>
+          
+          <View style={styles.featuresList}>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#10B981" name="chart.line.uptrend.xyaxis" />
+              <ThemedText style={styles.featureText}>Advanced Analytics & Reports</ThemedText>
+            </View>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#3B82F6" name="bubble.left" />
+              <ThemedText style={styles.featureText}>Unlimited AI Chat</ThemedText>
+            </View>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#8B5CF6" name="chart.bar" />
+              <ThemedText style={styles.featureText}>Real-time Metrics</ThemedText>
+            </View>
+            <View style={styles.featureItem}>
+              <IconSymbol size={24} color="#EF4444" name="bolt" />
+              <ThemedText style={styles.featureText}>Priority Support</ThemedText>
+            </View>
+          </View>
           
           <TouchableOpacity 
             style={styles.button}
             onPress={() => router.push('/pricing')}
           >
-            <ThemedText style={styles.buttonText}>View Plans</ThemedText>
+            <ThemedText style={styles.buttonText}>View Pricing Plans</ThemedText>
           </TouchableOpacity>
           
           <TouchableOpacity 
             style={[styles.button, styles.secondaryButton]}
             onPress={() => router.push('/(tabs)')}
           >
-            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Go Back</ThemedText>
+            <ThemedText style={[styles.buttonText, styles.secondaryButtonText]}>Maybe Later</ThemedText>
           </TouchableOpacity>
         </ThemedView>
       </ScrollView>
@@ -238,5 +283,29 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     color: '#007AFF',
+  },
+  featuresList: {
+    marginVertical: 32,
+    gap: 16,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+  },
+  featureText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  linkButton: {
+    marginTop: 20,
+    paddingVertical: 8,
+  },
+  linkButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });
