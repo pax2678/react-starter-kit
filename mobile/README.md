@@ -27,6 +27,10 @@ This is a React Native mobile application built with Expo that integrates with t
    npm start
    ```
 
+   ```bash
+   npx expo start
+   ```
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
