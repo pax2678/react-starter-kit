@@ -1,22 +1,18 @@
 import React, { useRef, useEffect } from 'react';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import HomepageScreen, { HomepageScreenRef } from '../homepage';
+import HomepageScreen, { type HomepageScreenRef } from '../homepage';
+import { useScrollToTop } from '../../contexts/ScrollToTopContext';
 
 export default function HomeScreen() {
   const homepageRef = useRef<HomepageScreenRef>(null);
-  const navigation = useNavigation();
+  const { homeScrollRef } = useScrollToTop();
 
-  // Listen for tab press events (when already on the tab)
+  // Register the scroll function with the context
   useEffect(() => {
-    const unsubscribe = navigation.addListener('tabPress', (e) => {
-      // Only scroll to top if we're already on this screen
-      if (navigation.isFocused()) {
-        homepageRef.current?.scrollToTop();
-      }
-    });
+    homeScrollRef.current = () => {
+      homepageRef.current?.scrollToTop();
+    };
+  }, [homeScrollRef]);
 
-    return unsubscribe;
-  }, [navigation]);
 
   return <HomepageScreen ref={homepageRef} />;
 }

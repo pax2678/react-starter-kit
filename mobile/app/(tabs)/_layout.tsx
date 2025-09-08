@@ -1,15 +1,17 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Platform } from 'react-native';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { HapticTab } from '../../components/HapticTab';
+import { IconSymbol } from '../../components/ui/IconSymbol';
+import TabBarBackground from '../../components/ui/TabBarBackground';
+import { Colors } from '../../constants/Colors';
+import { useColorScheme } from '../../hooks/useColorScheme';
+import { ScrollToTopProvider, useScrollToTop } from '../../contexts/ScrollToTopContext';
 
-export default function TabLayout() {
+function TabLayoutContent() {
   const colorScheme = useColorScheme();
+  const { homeScrollRef } = useScrollToTop();
 
   return (
     <Tabs
@@ -48,5 +50,13 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <ScrollToTopProvider>
+      <TabLayoutContent />
+    </ScrollToTopProvider>
   );
 }

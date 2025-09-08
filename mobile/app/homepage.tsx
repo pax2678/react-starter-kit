@@ -16,9 +16,9 @@ import { useAction, useQuery, useMutation } from 'convex/react';
 import { router } from 'expo-router';
 import { api } from 'convex/_generated/api';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ThemedText } from '../components/ThemedText';
+import { ThemedView } from '../components/ThemedView';
+import { IconSymbol } from '../components/ui/IconSymbol';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -179,9 +179,9 @@ const HomepageScreen = forwardRef<HomepageScreenRef, {}>((props, ref) => {
 
   // Section navigation data
   const sections = [
-    { name: 'Features', ref: featuresRef, icon: 'star.fill' },
-    { name: 'Team', ref: teamRef, icon: 'person.3.fill' },
-    { name: 'Pricing', ref: pricingRef, icon: 'dollarsign.circle.fill' },
+    { name: 'Features', ref: featuresRef, icon: 'star.fill' as any },
+    { name: 'Team', ref: teamRef, icon: 'person.3.fill' as any },
+    { name: 'Pricing', ref: pricingRef, icon: 'dollarsign.circle.fill' as any },
   ];
 
   // Track section positions to avoid remeasuring
@@ -233,7 +233,7 @@ const HomepageScreen = forwardRef<HomepageScreenRef, {}>((props, ref) => {
   }, []);
 
   // Scroll to section function using cached positions
-  const scrollToSection = (sectionRef: React.RefObject<View>) => {
+  const scrollToSection = (sectionRef: React.RefObject<View | null>) => {
     if (!scrollViewRef.current) return;
 
     // Determine which section this ref corresponds to
