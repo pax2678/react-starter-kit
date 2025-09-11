@@ -179,15 +179,6 @@ export default function DashboardScreen() {
           
           <TouchableOpacity 
             style={styles.actionButton}
-            onPress={() => router.push('/chat')}
-          >
-            <IconSymbol size={24} color="#007AFF" name="bubble.left" />
-            <ThemedText style={styles.actionButtonText}>AI Chat</ThemedText>
-            <IconSymbol size={16} color="#C7C7CC" name="chevron.right" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.actionButton}
             onPress={() => router.push('/pricing')}
           >
             <IconSymbol size={24} color="#007AFF" name="gearshape" />
